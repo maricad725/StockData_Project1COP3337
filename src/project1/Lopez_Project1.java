@@ -1,7 +1,4 @@
 //=============================================================================
-// Solution Code
-//=============================================================================
-//=============================================================================
 // PROGRAMMER: Alex Lopez  
 // PANTHER ID:  6132200
 //
@@ -24,13 +21,11 @@ package project1;
 //--------------------------------------------------
 import java.io.*;
 import java.util.*;
-import static java.lang.Math.sqrt; // square root for standard deviation in FindStandardDeviation helper function
-import java.text.DecimalFormat; // DecimalFormat function used to approximate correlation in FindCorrelation function
+import static java.lang.Math.sqrt; // square root for standard deviation func
+import java.text.DecimalFormat;    // Formating the correlation values
 
 
 public class Lopez_Project1 {
-
-    private static int count;
     
     public static void main(String[] args) {
         
@@ -48,55 +43,51 @@ public class Lopez_Project1 {
             // Always wrap FileReader in BufferedReader to deal with buffers
             BufferedReader bufferedReader =  new BufferedReader(fileReader);
             
+            // Creating Arraylists to store stock prices of each company 
+            ArrayList<Double> x_stockPrices = new ArrayList<>();    // stock data for x 
+            ArrayList<Double> GE_stockPrices = new ArrayList<>();   // stock data for GE 
+            ArrayList<Double> APPL_stockPrices = new ArrayList<>(); // stock data for Apple
+            ArrayList<Double> GOOG_stockPrices = new ArrayList<>(); // stock data for Google
+            ArrayList<Double> F_stockPrices = new ArrayList<>();    // stock data for F
            
-           // Creating Arraylists to store stock prices of each company 
-            ArrayList<Double> x_stockPrices = new ArrayList<Double>(); // stock data for x 
-            ArrayList<Double> GE_stockPrices = new ArrayList<Double>(); // stock data for GE 
-            ArrayList<Double> APPL_stockPrices = new ArrayList<Double>(); // stock data for Apple
-            ArrayList<Double> GOOG_stockPrices = new ArrayList<Double>(); // stock data for Google
-            ArrayList<Double> F_stockPrices = new ArrayList<Double>(); // stock data for F
-           
-        //------------------------------------------------------------------
-        // Inputing the stock data into their ArrayLists
-        //------------------------------------------------------------------ 
-            count = 0;   
-            int lineCount = 1 ; // line counter that  
-            String comma = "[,]"; // string delimeter using commmas for printing the stock correlation values
+            //------------------------------------------------------------------
+            // Inputing the stock data into their ArrayLists
+            //------------------------------------------------------------------ 
+  
+            int lineCount = 1;    // line counter that  
+            String comma = "[,]"; // string delimeter using commmas for reading stock values
             
             // 2d array list to store all stock data
-            ArrayList<ArrayList<Double>> stockData = new ArrayList<ArrayList<Double>>();
-            Collections.addAll(stockData, x_stockPrices, GE_stockPrices, APPL_stockPrices,GOOG_stockPrices, F_stockPrices);
+            ArrayList<ArrayList<Double>> stockData = new ArrayList<>();
+            Collections.addAll(stockData, x_stockPrices, GE_stockPrices, APPL_stockPrices, 
+                                          GOOG_stockPrices, F_stockPrices);
             
             // data from file in bufferedReader is assigned to line and read each line of 
             while ((line = bufferedReader.readLine()) != null){
-            // to store data from data below file header
-                   if (lineCount != 1 ){
-                       String [] Tokens = line.split(comma); // array that stores the tokens in stock data line delimiter function
-                        
-                       for (int s = 0; s < stockData.size(); s++ ){
-                           stockData.get(s).add(Double.parseDouble(Tokens[s + 1]));
-                       }// end for 
-                   } // ends if                    
-
-                   else {
-                            lineCount++; // to avoid reading the header of the data  
-                   } // ends else 
+                // to store data from data below file header
+                if (lineCount != 1 ) {
+                    String [] Tokens = line.split(comma); // stock tokens separated by commas 
+                    
+                    for (int s = 0; s < stockData.size(); s++ ){
+                        stockData.get(s).add(Double.parseDouble(Tokens[s + 1]));
+                    }// end for
+                    
+                } // ends if                    
+                else {
+                    lineCount++; // to avoid reading the header of the data  
+                } // ends else 
             
             }// ends while 
-             
-             // Always close files.
+            
+            //close buffer file reader.
             bufferedReader.close(); 
 
             //------------------------------------------------------------------
             // Doing the stock calculations 
             //------------------------------------------------------------------ 
-            
-            
+               
             // 2D Array list to store all correlation values of the stock data and to print them out in rows
             ArrayList<ArrayList<Double>> correlationMatrix = new ArrayList<ArrayList<Double>>();
-            
-            
-            int StockList_Counter = 0 ;
             
             // correlation arraylists to store correlations of stock data
             ArrayList<Double> x_Correlations = new ArrayList<>();
@@ -105,31 +96,30 @@ public class Lopez_Project1 {
             ArrayList<Double> GOOG_Correlations = new ArrayList<>();
             ArrayList<Double> F_Correlations = new ArrayList<>();
             
-            // 2d arraylust that contains all correlation data Arraylists
+            // 2d arraylist that contains all correlation data Arraylists
             ArrayList<ArrayList<Double>> cData = new ArrayList<>();
-                    
             Collections.addAll(cData, x_Correlations, GE_Correlations, APPL_Correlations,
                                       GOOG_Correlations, F_Correlations);
             
             // Arraylist that holds all correlation data
-            while (StockList_Counter < stockData.size()){
-           
-                    // storing correlation data into each correlation stock arraylist  
-                    for (int s = 0; s < stockData.size(); s++){
-                         cData.get(StockList_Counter).add(findCorrelation(stockData.get(StockList_Counter), stockData.get(s)));
-                    }
-                    
-                    correlationMatrix.add(cData.get(StockList_Counter)); // stores all the data into matrix
-                    StockList_Counter++; // moves to next stock 
+            int StockList_Counter = 0;
+            while (StockList_Counter < stockData.size()){    
+                // storing correlation data into each correlation stock arraylist 
+                double calcCorrelation = 0;
+                for (int s = 0; s < stockData.size(); s++){
+                    calcCorrelation = findCorrelation(stockData.get(StockList_Counter), stockData.get(s)); 
+                    cData.get(StockList_Counter).add(calcCorrelation);
+                }
+                
+                correlationMatrix.add(cData.get(StockList_Counter)); // stores all the data into matrix
+                StockList_Counter++;                                 // moves to next stock 
             }
                 
             // Print out rows of matrix 
             for (int c = 0; c < correlationMatrix.size(); c++){
-                    
                 System.out.println(correlationMatrix.get(c));
             }	
             
-    
         } // end try 
         
         // designed to handle errors if they arise
@@ -139,28 +129,24 @@ public class Lopez_Project1 {
         catch(IOException ex) {
              System.out.println("Error reading file '" + fileName + "'");                  
         }//end try catch 
-
-      
+  
     }// end main()
-    
-    
+        
 //------------------------------------------------------------------------------
 // helper functions/
 //------------------------------------------------------------------------------
     
-    public static double findAverage(ArrayList<Double> prices){
+    public static double findAverage(ArrayList<Double> prices) {
         
         double average = 0.0;
         double totalsum = 0.0;
 	
-        for(double currentDouble: prices){
-            
-            totalsum+=currentDouble;        
+        for (double currentDouble: prices){
+            totalsum += currentDouble;        
         }
         
         average = totalsum / prices.size();
-        
-       return average;
+        return average;
     }//end findAverage()
     
     //--------------------------------------------------------------------------
@@ -170,39 +156,37 @@ public class Lopez_Project1 {
         double average = findAverage(prices);
  	double totalsum = 0.0; 
 	   
-        for(double currentDouble: prices){
-              
-              totalsum += ((currentDouble - average) * (currentDouble - average)); 
+        for(double currentDouble: prices){      
+            totalsum += ((currentDouble - average) * (currentDouble - average)); 
         }
         
         stdDev = sqrt(totalsum/ (prices.size()-1) );
-        
         return stdDev;
     }
 
     //--------------------------------------------------------------------------
     
-    public static double findCorrelation(ArrayList<Double> firstPrices, ArrayList<Double> secondPrices ){
+    public static double findCorrelation(ArrayList<Double> firstPrices, ArrayList<Double> secondPrices ) {
         
         DecimalFormat dRound = new DecimalFormat("#.00"); // text format that gets string of correlation  
         
         double correlation = 0.0 ; // main variable for this helper method 
         
         // variables used for the calculation of the correlation values for any given stock arraylist 
-        double stdDev1= findStandardDeviation(firstPrices); 
+        double stdDev1 = findStandardDeviation(firstPrices); 
         double stdDev2 = findStandardDeviation(secondPrices); 
         double average1 = findAverage(firstPrices);  
         double average2 = findAverage(secondPrices); 
-        double totalsum= 0.0;
+        double totalsum = 0.0;
         
-        for ( int x = 0; x < firstPrices.size(); x++){
-            
-            totalsum += (firstPrices.get(x) - average1) *(secondPrices.get(x) - average2);
+        for (int x = 0; x < firstPrices.size(); x++) {
+            totalsum += (firstPrices.get(x) - average1) * (secondPrices.get(x) - average2);
         }
         
-        correlation = totalsum/((stdDev1 * stdDev2) *(firstPrices.size() - 1));
-         
-       return Double.parseDouble(dRound.format(correlation)); // rounds and returns the correlation value as a double
+       correlation = totalsum /((stdDev1 * stdDev2) * (firstPrices.size() - 1));
+       
+       // rounds and returns the correlation value as a double
+       return Double.parseDouble(dRound.format(correlation)); 
     
     }//end findCorrelation()
       
